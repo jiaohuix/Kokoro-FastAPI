@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  kokoro-gpu:
+    image: wonders/kokoro-gpu:v0.1.0
+    container_name: kokoro-gpu
+    restart: always
+    ports:
+      - "8001:8880"
+    volumes:
+      - ./api:/app/api
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    tty: true
+    stdin_open: true
