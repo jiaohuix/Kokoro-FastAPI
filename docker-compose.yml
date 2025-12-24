@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   kokoro-gpu:
-    image: wonders/kokoro-gpu:v0.1.0
+    image: ghcr.io/remsky/kokoro-fastapi-gpu:latest
     container_name: kokoro-gpu
     restart: always
     ports:
