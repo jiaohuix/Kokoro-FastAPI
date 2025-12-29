@@ -1,0 +1,20 @@
+{
+  "voice_id": "hemi",
+  "display_name": "公主",
+  "language": ["zh-CN"],
+  "gender": "female",
+  "age_range": "teen",
+  "description": "傲娇公主音，高贵傲慢又带点娇俏，适合大小姐、公主类角色",
+  "style_tags": ["傲娇", "公主", "高贵", "娇俏"],
+  "default_emotion": "neutral",
+  "supported_emotions": ["neutral","傲娇"],
+  "capabilities": {
+    "tts": true,
+    "voice_clone": true,
+    "emotion_control": true,
+    "style_control": true
+  },
+
+  "source": "system",
+  "created_at": "2025-12-25T08:00:00Z"
+}

@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_0001",
+  "voice_id": "liumei",
+  "text": "风眠师弟，姐姐就那么吓人吗，连头也不敢抬",
+  "language": "zh-CN",
+  "emotion": "妩媚",
+  "emotion_confidence": 0.95,
+  "style_tags": ["御姐", "成熟", "魅惑"],
+  "is_default_reference": true,
+  "audio": {
+    "duration": 5.98,
+    "sample_rate": 44100
+  },
+  "provenance": {
+    "title": "合欢宗",
+    "character": "柳媚",
+    "scene": "修仙小说"
+  },
+  "created_at": "2025-10-14T14:00:00Z"
+}

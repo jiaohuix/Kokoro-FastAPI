@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_0001",
+  "voice_id": "luoxue",
+  "text": "你可知那合欢宗具体方位？毕竟我需要跨域而至，只要你那离跨域传送阵不远",
+  "language": "zh-CN",
+  "emotion": "清冷",
+  "emotion_confidence": 0.93,
+  "style_tags": ["清冷", "高雅"],
+  "is_default_reference": true,
+  "audio": {
+    "duration": 6.34,
+    "sample_rate": 44100
+  },
+  "provenance": {
+    "title": "合欢宗",
+    "character": "洛雪",
+    "scene": "修仙小说"
+  },
+  "created_at": "2025-10-14T14:00:00Z"
+}

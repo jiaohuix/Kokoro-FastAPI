@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_0001",
+  "voice_id": "hemi",
+  "text": "你个臭流氓原来就这两下子，我还以为有多了不起呢",
+  "language": "zh-CN",
+  "emotion": "傲娇",
+  "emotion_confidence": 0.95,
+  "style_tags": ["公主", "高贵", "娇俏"],
+  "is_default_reference": true,
+   "audio": {
+    "duration": 4,
+    "sample_rate": 16000
+  },
+  "provenance": {
+    "title": "神墓",
+    "episode": 12,
+    "character": "公主"
+   },
+   "created_at": "2025-10-14T14:00:00Z"
+}

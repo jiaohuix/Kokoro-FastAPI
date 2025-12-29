@@ -1,0 +1,19 @@
+{
+  "voice_id": "liumei",
+  "display_name": "柳媚",
+  "language": ["zh-CN"],
+  "gender": "female",
+  "age_range": "adult",
+  "description": "御姐音，成熟魅惑的女性声音，适合妩媚、诱惑类角色",
+  "style_tags": ["御姐", "成熟", "魅惑"],
+  "default_emotion": "neutral",
+  "supported_emotions": ["neutral", "妩媚"],
+  "capabilities": {
+    "tts": true,
+    "voice_clone": true,
+    "emotion_control": true,
+    "style_control": true
+  },
+  "source": "system",
+  "created_at": "2025-12-25T08:00:00Z"
+}

@@ -1,0 +1,20 @@
+{
+  "sample_id": "sample_0001",
+  "voice_id": "female-shaonv",
+  "text": "让我们一起加油，实现我们的梦想。",
+  "language": "zh-CN",
+  "emotion": "自然",
+  "emotion_confidence": 0.95,
+  "style_tags": ["女性", "成年"],
+  "is_default_reference": true,
+  "audio": {
+    "duration": 2.937,
+    "sample_rate": 32000
+  },
+  "provenance": {
+    "title": "有声书",
+    "character": "少女音色",
+    "scene": "有声书"
+  },
+  "created_at": "2025-10-18T23:57:19Z"
+}

@@ -1,0 +1,19 @@
+{
+  "voice_id": "luoxue",
+  "display_name": "洛雪",
+  "language": ["zh-CN"],
+  "gender": "female",
+  "age_range": "adult",
+  "description": "清冷高雅的女性声音，冷静淡然，适合冰山美人、高冷仙子类角色",
+  "style_tags": ["清冷", "高雅", "冰山"],
+  "default_emotion": "neutral",
+  "supported_emotions": ["neutral", "清冷"],
+  "capabilities": {
+    "tts": true,
+    "voice_clone": true,
+    "emotion_control": true,
+    "style_control": true
+  },
+  "source": "system",
+  "created_at": "2025-12-25T08:00:00Z"
+}

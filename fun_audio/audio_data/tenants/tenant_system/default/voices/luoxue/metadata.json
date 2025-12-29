@@ -1,0 +1,25 @@
+{
+  "voice_id": "luoxue",
+  "name": "洛雪",
+  "gender": "female",
+  "age": "adult",
+  "description": "清冷高雅的女性声音，冷静淡然，适合冰山美人、高冷仙子类角色",
+  "language": "zh-CN",
+  "tags": [
+    "清冷",
+    "高雅",
+    "冰山",
+    "女声"
+  ],
+  "reference_text": "你可知那合欢宗具体方位？毕竟我需要跨域而至，只要你那 离跨域传送阵不远",
+  "created_at": "2025-10-14T14:00:00",
+  "updated_at": "2025-10-14T14:00:00",
+  "audio_duration": 6.3402267573696145,
+  "sample_rate": 44100,
+  "custom_fields": {
+    "character": "合欢宗-洛雪",
+    "scene": "修仙小说",
+    "emotion": "清冷",
+    "source": "hehuanzong_luoxue"
+  }
+}
