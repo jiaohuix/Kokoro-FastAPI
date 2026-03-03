@@ -1,99 +1,83 @@
 #!/usr/bin/env python3
-"""Download and prepare Kokoro v1.0 model."""
+"""Download and prepare Kokoro v1.0 model from ModelScope (jiaohui/kokoro)."""
 
-import json
 import os
+import shutil
 from pathlib import Path
-from urllib.request import urlretrieve
-
+import argparse
+from modelscope import snapshot_download
 from loguru import logger
 
 
-def verify_files(model_path: str, config_path: str) -> bool:
-    """Verify that model files exist and are valid.
-
-    Args:
-        model_path: Path to model file
-        config_path: Path to config file
-
-    Returns:
-        True if files exist and are valid
-    """
-    try:
-        # Check files exist
-        if not os.path.exists(model_path):
-            return False
-        if not os.path.exists(config_path):
-            return False
-
-        # Verify config file is valid JSON
-        with open(config_path) as f:
-            config = json.load(f)
-
-        # Check model file size (should be non-zero)
-        if os.path.getsize(model_path) == 0:
-            return False
-
-        return True
-    except Exception:
-        return False
-
-
 def download_model(output_dir: str) -> None:
-    """Download model files from GitHub release.
-
-    Args:
-        output_dir: Directory to save model files
-    """
+    """Download model from ModelScope and copy to output directory."""
     try:
-        # Create output directory
-        os.makedirs(output_dir, exist_ok=True)
+        model_id = 'jiaohui/kokoro'
+        model_file_name = "kokoro-v1_0.pth"
+        config_file_name = "config.json"  # 如果下载包里有这个文件
 
-        # Define file paths
-        model_file = "kokoro-v1_0.pth"
-        config_file = "config.json"
-        model_path = os.path.join(output_dir, model_file)
-        config_path = os.path.join(output_dir, config_file)
+        # 在容器中固定缓存目录为 /app/models（WORKDIR=/app）
+        cache_dir = Path("/app/models")
+        cache_dir.mkdir(parents=True, exist_ok=True)
 
-        # Check if files already exist and are valid
-        if verify_files(model_path, config_path):
-            logger.info("Model files already exist and are valid")
-            return
+        logger.info(f"Downloading model '{model_id}' from ModelScope to {cache_dir}")
+        model_dir = snapshot_download(model_id, cache_dir=str(cache_dir))
+        logger.info(f"Model downloaded to: {model_dir}")
 
-        logger.info("Downloading Kokoro v1.0 model files")
+        # 递归查找 kokoro-v1_0.pth
+        source_pth = None
+        source_config = None
+        for root, dirs, files in os.walk(model_dir):
+            if model_file_name in files:
+                source_pth = Path(root) / model_file_name
+            if config_file_name in files:
+                source_config = Path(root) / config_file_name
 
-        # GitHub release URLs (to be updated with v0.2.0 release)
-        base_url = "https://github.com/remsky/Kokoro-FastAPI/releases/download/v0.1.4"
-        model_url = f"{base_url}/{model_file}"
-        config_url = f"{base_url}/{config_file}"
+        if source_pth is None:
+            raise FileNotFoundError(f"{model_file_name} not found in downloaded directory: {model_dir}")
 
-        # Download files
-        logger.info("Downloading model file...")
-        urlretrieve(model_url, model_path)
+        # 目标目录
+        output_path = Path(output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
 
-        logger.info("Downloading config file...")
-        urlretrieve(config_url, config_path)
+        # 复制主模型文件
+        dest_pth = output_path / model_file_name
+        if dest_pth.exists():
+            file_size_mb = dest_pth.stat().st_size / (1024 * 1024)
+            if file_size_mb > 300:  # 假设正常文件 > 300MB
+                logger.info(f"Model file already exists and size looks correct ({file_size_mb:.1f} MB): {dest_pth}")
+            else:
+                logger.warning(f"Existing file size too small ({file_size_mb:.1f} MB), re-copying...")
+                shutil.copy2(source_pth, dest_pth)
+                logger.info(f"Model file re-copied to: {dest_pth}")
+        else:
+            shutil.copy2(source_pth, dest_pth)
+            logger.info(f"Model file copied to: {dest_pth}")
 
-        # Verify downloaded files
-        if not verify_files(model_path, config_path):
-            raise RuntimeError("Failed to verify downloaded files")
+        # 如果有 config.json，也复制
+        if source_config:
+            dest_config = output_path / config_file_name
+            shutil.copy2(source_config, dest_config)
+            logger.info(f"Config file copied to: {dest_config}")
+        else:
+            logger.warning("config.json not found in ModelScope download. "
+                           "The project may use default config or need manual addition.")
 
-        logger.info(f"✓ Model files prepared in {output_dir}")
+        logger.success(f"✓ Model preparation completed in {output_dir}")
 
     except Exception as e:
-        logger.error(f"Failed to download model: {e}")
+        logger.error(f"Failed to download or prepare model: {e}")
         raise
 
 
 def main():
     """Main entry point."""
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Download Kokoro v1.0 model")
+    parser = argparse.ArgumentParser(description="Download Kokoro v1.0 model from ModelScope")
     parser.add_argument(
-        "--output", required=True, help="Output directory for model files"
+        "--output",
+        required=True,
+        help="Output directory for model files (e.g. api/src/models/v1_0)"
     )
-
     args = parser.parse_args()
     download_model(args.output)
 

@@ -85,6 +85,15 @@ with client.audio.speech.with_streaming_response.create(
         player.write(chunk)
 ```
 
+## 6. 打包镜像cu12.3
+
+```
+cd docker/gpu
+docker compose build --no-cache
+sudo chown -R 1001:1001 api/src/models/v1_0
+docker save kokoro-fastapi:gpu-cu123 | gzip > kokoro-fastapi-gpu-cu123.tgz
+```
+
 ---
 
 ## 常见问题

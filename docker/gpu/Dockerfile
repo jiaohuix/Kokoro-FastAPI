@@ -1,46 +1,56 @@
-FROM --platform=$BUILDPLATFORM nvidia/cuda:12.8.0-cudnn-runtime-ubuntu24.04
-# Set non-interactive frontend
-ENV DEBIAN_FRONTEND=noninteractive
+FROM --platform=$BUILDPLATFORM swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/nvidia/cuda:12.3.2-cudnn9-devel-ubuntu22.04
 
 # Install Python and other dependencies
-RUN apt-get update && apt-get install -y \
-    python3.10 \
-    python3-venv \
-    espeak-ng \
-    espeak-ng-data \
-    git \
-    libsndfile1 \
-    curl \
-    ffmpeg \
-    g++ \
- && apt-get clean && rm -rf /var/lib/apt/lists/* \
- && mkdir -p /usr/share/espeak-ng-data \
- && ln -s /usr/lib/*/espeak-ng-data/* /usr/share/espeak-ng-data/
+# RUN apt-get update -y && \
+#     apt-get install -y build-essential python3.10 python3.10-dev  python3-venv espeak-ng espeak-ng-data git libsndfile1 curl ffmpeg g++ cmake && \
+#     apt-get clean && rm -rf /var/lib/apt/lists/* && \
+#     mkdir -p /usr/share/espeak-ng-data && \
+#     ln -s /usr/lib/*/espeak-ng-data/* /usr/share/espeak-ng-data/ && \
+#     curl --proto '=https' --tlsv1.2 -LsSf https://github.com/astral-sh/uv/releases/latest/download/uv-installer.sh | sh && \
+#     mv /root/.local/bin/uv /usr/local/bin/ && \
+#     mv /root/.local/bin/uvx /usr/local/bin/ && \
+#     useradd -m -u 1001 appuser && \
+#     mkdir -p /app/api/src/models/v1_0 && \
+#     chown -R appuser:appuser /app
 
-# Install UV using the installer script
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh && \
-    mv /root/.local/bin/uv /usr/local/bin/ && \
-    mv /root/.local/bin/uvx /usr/local/bin/ 
-
-# Create non-root user and set up directories and permissions
-RUN useradd -m -u 1001 appuser && \
+# Install Python and other dependencies
+RUN apt-get update -y && \
+    apt-get install -y \
+        build-essential \
+        python3.10 \
+        python3.10-dev \
+        python3-venv python3-pip \
+        espeak-ng \
+        espeak-ng-data \
+        git \
+        libsndfile1 \
+        curl \
+        ffmpeg \
+        g++ \
+        cmake && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /usr/share/espeak-ng-data && \
+    ln -s /usr/lib/*/espeak-ng-data/* /usr/share/espeak-ng-data/ && \
+    python3 -m pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple uv && \
+    useradd -m -u 1001 appuser && \
     mkdir -p /app/api/src/models/v1_0 && \
     chown -R appuser:appuser /app
-    
+
 USER appuser
 WORKDIR /app
 
 # Copy dependency files
 COPY --chown=appuser:appuser pyproject.toml ./pyproject.toml
 
-ENV PHONEMIZER_ESPEAK_PATH=/usr/bin \
-    PHONEMIZER_ESPEAK_DATA=/usr/share/espeak-ng-data \
-    ESPEAK_DATA_PATH=/usr/share/espeak-ng-data
+# Install dependencies with GPU extras
+# RUN uv venv --python 3.10 && \
+#     uv sync --extra gpu --no-cache && uv pip install modelscope
 
-# Install dependencies with GPU extras (using cache mounts)
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv venv --python 3.10 && \
-    uv sync --extra gpu
+RUN uv venv --python 3.10 && \
+    UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple \
+    UV_EXTRA_INDEX_URL=https://mirrors.aliyun.com/pypi/simple \
+    uv sync --extra gpu --no-cache && \
+    uv pip install modelscope --index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Copy project files including models
 COPY --chown=appuser:appuser api ./api
@@ -50,11 +60,15 @@ RUN chmod +x ./entrypoint.sh
 
 
 # Set all environment variables in one go
-ENV PYTHONUNBUFFERED=1 \
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app:/app/api \
-    PATH="/app/.venv/bin:$PATH" \
     UV_LINK_MODE=copy \
-    USE_GPU=true 
+    USE_GPU=true \
+    PHONEMIZER_ESPEAK_PATH=/usr/bin \
+    PHONEMIZER_ESPEAK_DATA=/usr/share/espeak-ng-data \
+    ESPEAK_DATA_PATH=/usr/share/espeak-ng-data \
+    DEVICE="gpu"
 
 ENV DOWNLOAD_MODEL=true
 # Download model if enabled
@@ -62,6 +76,5 @@ RUN if [ "$DOWNLOAD_MODEL" = "true" ]; then \
     python download_model.py --output api/src/models/v1_0; \
     fi
 
-ENV DEVICE="gpu"
 # Run FastAPI server through entrypoint.sh
 CMD ["./entrypoint.sh"]

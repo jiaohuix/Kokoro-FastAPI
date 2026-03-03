@@ -2,6 +2,7 @@ name: kokoro-tts-gpu
 services:
   kokoro-tts:
     # image: ghcr.io/remsky/kokoro-fastapi-gpu:v${VERSION}
+    image: kokoro-fastapi:gpu-cu123
     build:
       context: ../..
       dockerfile: docker/gpu/Dockerfile
@@ -14,6 +15,7 @@ services:
       - PYTHONPATH=/app:/app/api
       - USE_GPU=true
       - PYTHONUNBUFFERED=1
+      - API_LOG_LEVEL=DEBUG
     deploy:
       resources:
         reservations:
