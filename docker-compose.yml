@@ -13,6 +13,7 @@ services:
         # 显式指定容器可见的 GPU 索引为 0
         - NVIDIA_VISIBLE_DEVICES=0
         - NVIDIA_DRIVER_CAPABILITIES=all
+        - DOWNLOAD_MODEL=false
     deploy:
       resources:
         reservations:
