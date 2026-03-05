@@ -85,6 +85,19 @@ with client.audio.speech.with_streaming_response.create(
         player.write(chunk)
 ```
 
+```shell
+curl http://localhost:8880/v1/audio/speech \
+  -H "Authorization: Bearer not-needed" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "kokoro",
+    "voice": "af_bella",
+    "input": "Hello world!",
+    "response_format": "mp3"
+  }' \
+  --output output.mp3
+```
+
 ## 6. 打包镜像cu12.3
 
 ```
